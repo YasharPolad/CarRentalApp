@@ -1,6 +1,9 @@
-﻿using Business.Concrete;
+﻿using Business;
+using Business.Concrete;
+using DataAccess.Concrete.EFCoreRepository;
 using DataAccess.Concrete.InMemoryRepository;
 using Entities.Concrete;
+using Entities.Validation;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +13,7 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            CarService carService = new CarService(new InMemoryCarRepository());
+            CarService carService = new CarService(new CarRepository(new CarRentalContext()), new CarValidator());
 
             while(true)
             {
@@ -42,6 +45,21 @@ namespace ConsoleUI
                     string detailUserInput = GetMenuInput("Please enter 1, 2, or 3 for update, delete and back to menu");
                     if (detailUserInput == "3")
                         continue;
+                }
+                else if(input == "3")
+                {
+                    var carToAdd = AddCar();
+                    try
+                    {
+                        carService.AddCar(carToAdd);
+                    }
+                    catch (InvalidCarException ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        string userInput = GetMenuInput("Press any key to go back to main menu");
+                        continue;
+                    }
+
                 }
 
             }
@@ -80,6 +98,18 @@ namespace ConsoleUI
             Console.WriteLine(@$"Name - {car.Description}
 Price for today - {car.DailyPrice}
 Year - {car.ModelYear}");
+        }
+
+        static Car AddCar()
+        {
+            Console.Clear();
+            var car = new Car();
+            car.Name = GetMenuInput("Enter car name");  
+            car.ModelYear = int.Parse(GetMenuInput("Enter car year")); //Need to have validation here
+            car.DailyPrice = int.Parse(GetMenuInput("Enter car price"));
+            car.ColorId = int.Parse(GetMenuInput("Enter color id"));
+            car.BrandId = int.Parse(GetMenuInput("Enter brand id"));
+            return car;
         }
     }
 }
