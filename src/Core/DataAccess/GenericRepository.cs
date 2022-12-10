@@ -1,5 +1,4 @@
-﻿using DataAccess.Abstract;
-using Entities.Abstract;
+﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,12 +6,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace DataAccess.Concrete.EFCoreRepository
+namespace Core.DataAccess
 {
     public class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
         where TEntity: class, IEntity, new()
-        where TContext: DbContext
-    {
+        where TContext: DbContext, new()
+     {
         protected readonly TContext _context;
 
         public GenericRepository(TContext context)
