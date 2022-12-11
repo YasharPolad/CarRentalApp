@@ -1,9 +1,9 @@
 ﻿using Business;
 using Business.Concrete;
+using Business.Validation;
 using DataAccess.Concrete.EFCoreRepository;
 using DataAccess.Concrete.InMemoryRepository;
 using Entities.Concrete;
-using Entities.Validation;
 using System;
 using System.Collections.Generic;
 
@@ -61,6 +61,13 @@ namespace ConsoleUI
                     }
 
                 }
+                else if(input == "4")
+                {
+                    BrandSeeder();
+                    ColorSeeder();
+                    CarSeeder();
+                    continue;
+                }
 
             }
 
@@ -73,15 +80,16 @@ namespace ConsoleUI
 
 1. List all cars
 2. Show car details by id 
-3. Add a new car");                 
+3. Add a new car
+4. Seed the database");                 
         }
 
         static void PrintAllCars(CarService carService)
         {
             Console.Clear();
-            carService
-                .GetAllCars()
-                .ForEach(car => Console.WriteLine($"{car.Id} - {car.Description}"));
+            var cars = carService.GetCarDetails();
+
+            cars.ForEach(car => Console.WriteLine($"{car.CarName} - {car.BrandName} - {car.ColorName}"));
         }
 
         static string GetMenuInput(string prompt)
@@ -110,6 +118,55 @@ Year - {car.ModelYear}");
             car.ColorId = int.Parse(GetMenuInput("Enter color id"));
             car.BrandId = int.Parse(GetMenuInput("Enter brand id"));
             return car;
+        }
+
+        static void ColorSeeder()
+        {
+            var colors = new List<Color>
+            {
+                new Color{Name = "Black"},
+                new Color{Name = "White"},
+                new Color{Name = "Red"},
+                new Color{Name = "Green"},
+                new Color{Name = "Blue"},
+                new Color{Name = "Yellow"},
+                new Color{Name = "Grey"}
+            };
+
+            ColorService colorService = new ColorService(new ColorRepository(new CarRentalContext()));
+            colors.ForEach(c => colorService.AddColor(c));
+        }
+
+        static void BrandSeeder()
+        {
+            var brands = new List<Brand>
+            {
+                new Brand{Name = "Mercedes"},
+                new Brand{Name = "BMW"},
+                new Brand{Name = "Ferrari"},
+                new Brand{Name = "Toyota"},
+                new Brand{Name = "Jeep"},
+                new Brand{Name = "Nissa"}
+            };
+
+            BrandService brandService = new BrandService(new BrandRepository(new CarRentalContext()));
+            brands.ForEach(b => brandService.AddBrand(b));
+        }
+
+        static void CarSeeder()
+        {
+            var cars = new List<Car>
+            {
+                new Car{BrandId = 2, ColorId = 2, DailyPrice = 12000, Name = "Toyota Corolla", ModelYear = 2006},
+                new Car{BrandId = 2, ColorId = 2, DailyPrice = 50000, Name = "Range Rover", ModelYear = 2010},
+                new Car{BrandId = 1, ColorId = 7, DailyPrice = 300000,Name = "Ferrari", ModelYear = 2019},
+                new Car{BrandId = 3, ColorId = 4, DailyPrice = 22000, Name = "Mitsubishi", ModelYear = 2020},
+                new Car{BrandId = 3, ColorId = 1, DailyPrice = 30000, Name = "Dodge", ModelYear = 2018},
+                new Car{BrandId = 6, ColorId = 3, DailyPrice = 15000, Name = "Nissan", ModelYear = 2009},
+            };
+
+            CarService carService = new CarService(new CarRepository(new CarRentalContext()), new CarValidator());
+            cars.ForEach(c => carService.AddCar(c));
         }
     }
 }

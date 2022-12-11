@@ -1,6 +1,8 @@
 ﻿using Business.Abstract;
+using Business.Validation;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using FluentValidation;
 using FluentValidation.Results;
 using System;
@@ -12,9 +14,9 @@ namespace Business.Concrete
     public class CarService : ICarService
     {
         private readonly ICarRepository _carRepository;
-        private readonly IValidator<Car> _carValidator;
+        private readonly ICarValidator _carValidator;
 
-        public CarService(ICarRepository carRepository, IValidator<Car> carValidator)
+        public CarService(ICarRepository carRepository, ICarValidator carValidator)
         {
             _carRepository = carRepository;
             _carValidator = carValidator;
@@ -23,10 +25,10 @@ namespace Business.Concrete
         //Basic CRUD
         public void AddCar(Car car)
         {
-            ValidationResult result = _carValidator.Validate(car);
-            if (!result.IsValid)
+            bool result = _carValidator.Validate(car);
+            if (!result)
             {
-                throw new InvalidCarException(result.Errors[0].ErrorMessage);
+                throw new InvalidCarException("The entered car is invalid");
             }
             _carRepository.Add(car);
         }
@@ -59,6 +61,11 @@ namespace Business.Concrete
         public List<Car> GetCarsByColorId(int id)
         {
             return _carRepository.GetAll(c => c.ColorId == id);
+        }
+
+        public List<CarDetailDto> GetCarDetails()
+        {
+            return _carRepository.GetAllCarDetails();
         }
     }
 }
