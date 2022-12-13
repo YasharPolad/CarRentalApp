@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -16,14 +18,42 @@ namespace Business.Concrete
             _colorRepository = colorRepository;
         }
 
-        public void AddColor(Color color)
+        public IResponse AddColor(Color color)
         {
             _colorRepository.Add(color);
+            return new SuccessResponse();
         }
 
-        public List<Color> ListAllColors()
+        public IResponse DeleteColor(Color color)
         {
-            return _colorRepository.GetAll();
+            _colorRepository.Delete(color);
+            return new SuccessResponse();
+        }
+
+        public IDataResponse<Color> GetColorById(int colorId)
+        {
+            var color = _colorRepository
+                    .Get(c => c.Id == colorId);
+            if(color == null)
+            {
+                return new ErrorDataResponse<Color>(Messages.ItemNotFound(typeof(Color), colorId));
+            }
+            else
+            {
+                return new SuccessDataResponse<Color>(color);
+            }
+        }
+
+        public IDataResponse<List<Color>> ListAllColors()
+        {
+            var colors = _colorRepository.GetAll();
+            return new SuccessDataResponse<List<Color>>(colors);
+        }
+
+        public IResponse UpdateColor(Color color)
+        {
+            _colorRepository.Update(color);
+            return new SuccessResponse();
         }
     }
 }
