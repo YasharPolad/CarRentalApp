@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -16,14 +18,42 @@ namespace Business.Concrete
             _brandRepository = brandRepository;
         }
 
-        public void AddBrand(Brand brand)
+        public IResponse AddBrand(Brand brand)
         {
             _brandRepository.Add(brand);
+            return new SuccessResponse();
         }
 
-        public List<Brand> ListAllBrands()
+        public IResponse DeleteBrand(Brand brand)
         {
-            return _brandRepository.GetAll();
+            _brandRepository.Delete(brand);
+            return new SuccessResponse();
+        }
+
+        public IDataResponse<Brand> GetBrandById(int brandId)
+        {
+            var brand = _brandRepository
+                    .Get(b => b.Id == brandId);
+            if(brand == null)
+            {
+                return new ErrorDataResponse<Brand>(Messages.ItemNotFound(typeof(Brand), brandId));
+            }
+            else
+            {
+                return new SuccessDataResponse<Brand>(brand);
+            }
+        }
+
+        public IDataResponse<List<Brand>> ListAllBrands()
+        {
+            var brands =  _brandRepository.GetAll();
+            return new SuccessDataResponse<List<Brand>>(brands);
+        }
+
+        public IResponse UpdateBrand(Brand brand)
+        {
+            _brandRepository.Update(brand);
+            return new SuccessResponse();
         }
     }
 }

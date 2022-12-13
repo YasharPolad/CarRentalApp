@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
+using Business.Constants;
 using Business.Validation;
+using Core.Utilities;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dtos;
@@ -23,49 +25,64 @@ namespace Business.Concrete
         }
 
         //Basic CRUD
-        public void AddCar(Car car)
+        public IResponse AddCar(Car car)
         {
             bool result = _carValidator.Validate(car);
             if (!result)
             {
-                throw new InvalidCarException("The entered car is invalid");
+                return new ErrorResponse(Messages.InvalidItem(typeof(Car)));
             }
             _carRepository.Add(car);
+            return new SuccessResponse();
         }
 
-        public void DeleteCar(Car car)
+        public IResponse DeleteCar(Car car)
         {
             _carRepository.Delete(car);
+            return new SuccessResponse();
         }
 
-        public List<Car> GetAllCars()
+        public IDataResponse<List<Car>> GetAllCars()
         {
-            return _carRepository.GetAll();
+            var cars = _carRepository.GetAll();
+            return new SuccessDataResponse<List<Car>>(cars);
         }
 
-        public Car GetCarById(int id)
+        public IDataResponse<Car> GetCarById(int id)
         {
-            return _carRepository.Get(c => c.Id == id);
+            var car = _carRepository.Get(c => c.Id == id);
+            if(car == null)
+            {
+                return new ErrorDataResponse<Car>(Messages.ItemNotFound(typeof(Car), id));
+            }
+            else
+            {
+                return new SuccessDataResponse<Car>(car);
+            }
         }
 
-        public void UpdateCar(Car car)
+        public IResponse UpdateCar(Car car)
         {
             _carRepository.Update(car);
+            return new SuccessResponse();
         }
 
         //Other Methods
-        public List<Car> GetCarsByBrandId(int id)
+        public IDataResponse<List<Car>> GetCarsByBrandId(int id)
         {
-            return _carRepository.GetAll(c => c.BrandId == id);
+            var cars = _carRepository.GetAll(c => c.BrandId == id);
+            return new SuccessDataResponse<List<Car>>(cars);
         }
-        public List<Car> GetCarsByColorId(int id)
+        public IDataResponse<List<Car>> GetCarsByColorId(int id)
         {
-            return _carRepository.GetAll(c => c.ColorId == id);
+            var cars = _carRepository.GetAll(c => c.ColorId == id);
+            return new SuccessDataResponse<List<Car>>(cars);
         }
 
-        public List<CarDetailDto> GetCarDetails()
+        public IDataResponse<List<CarDetailDto>> GetCarDetails()
         {
-            return _carRepository.GetAllCarDetails();
+            var carDetails = _carRepository.GetAllCarDetails();
+            return new SuccessDataResponse<List<CarDetailDto>>(carDetails);
         }
     }
 }
