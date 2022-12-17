@@ -14,7 +14,7 @@ namespace Entities.Concrete
         public int ModelYear { get; set; }
         public decimal DailyPrice { get; set; } //Price per day
         public string Description { get; set; }
-        public bool IsAvailable { get; set; }
+        public bool IsAvailable { get; set; } = true;
 
         public Color Color { get; set; }
         public Brand Brand { get; set; }

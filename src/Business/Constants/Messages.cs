@@ -28,6 +28,21 @@ namespace Business.Constants
             return $"The entered {GetClassName(itemType)} was invalid";
         }
 
+        public static string CarNotAvailable()
+        {
+            return $"The car you are trying to rent isn't available at the moment";
+        }
+
+        public static string CarNotAvailable(int carId)
+        {
+            return $"The car with id {carId} isn't available at the moment";
+        }
+
+        public static string SupposedReturnDateIsSmallerThanNow()
+        {
+            return $"Supposed return date cannot be in the past";
+        }
+
         private static string GetClassName(Type itemType) //TODO: I feel like this method doesn't fit in this class
         {
             var itemSplitName = itemType.Name.Split(".");
