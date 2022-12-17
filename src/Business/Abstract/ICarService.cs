@@ -10,6 +10,7 @@ namespace Business.Abstract
     public interface ICarService
     {
         IDataResponse<List<Car>> GetAllCars();
+        IDataResponse<Car> GetCarById(int id);
         IResponse AddCar(Car car);
         IResponse UpdateCar(Car car);
         IResponse DeleteCar(Car car);
@@ -17,5 +18,8 @@ namespace Business.Abstract
         IDataResponse<List<Car>> GetCarsByColorId(int id);
         IDataResponse<List<Car>> GetCarsByBrandId(int id);
         IDataResponse<List<CarDetailDto>> GetCarDetails();
+
+        IResponse RentCar(Car car);
+        IResponse ReturnCar(Car car);
     }
 }

@@ -84,5 +84,19 @@ namespace Business.Concrete
             var carDetails = _carRepository.GetAllCarDetails();
             return new SuccessDataResponse<List<CarDetailDto>>(carDetails);
         }
+
+        public IResponse RentCar(Car car)
+        {
+            car.IsAvailable = false;
+            _carRepository.Update(car);
+            return new SuccessResponse();
+        }
+
+        public IResponse ReturnCar(Car car)
+        {
+            car.IsAvailable = true;
+            _carRepository.Update(car);
+            return new SuccessResponse();
+        }
     }
 }
