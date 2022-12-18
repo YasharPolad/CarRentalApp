@@ -88,9 +88,11 @@ namespace Business.Concrete
 
         private decimal CalculateExtraPayment(Rental rental, decimal lateReturnRate)
         {
-            return rental.ReturnDate
-                .GetValueOrDefault()
-                .Subtract(rental.SupposedReturnDate).Hours * lateReturnRate;
+             var timeDifference = rental.ReturnDate
+                        .GetValueOrDefault()
+                        .Subtract(rental.SupposedReturnDate).Hours;
+            if (timeDifference <= 0) return 0;
+            return timeDifference * lateReturnRate;
         }
 
 
